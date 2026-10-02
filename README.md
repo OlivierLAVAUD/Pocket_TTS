@@ -184,7 +184,7 @@ docker builder prune                # free space after builds
 | Page stays empty although the log says `Model ready` | open the exact port printed in the log |
 | "We could not download the weights for the model with voice cloning" | expected: set `HF_TOKEN` (see §3) or use a built-in voice |
 | The first start is slow | it downloads ~440 MB of weights; later starts take ~6 s |
-| Docker build fails on `lookup ghcr.io … permission denied` | DNS/Docker issue, see [`manuel.md`](./manuel.md) §5 |
+| Docker build fails on `lookup ghcr.io … permission denied` | DNS/Docker issue: see the "Docker troubleshooting" section of the upstream project, or fix `resolv.conf` as described in [Docker's DNS documentation](https://docs.docker.com/engine/daemon/#configure-the-docker-daemon) |
 | Disk full during `docker build` | the image is large (~20 GB); free space or use mode [B] |
 | An error appears in the log | read `docker compose logs pocket-tts-app`, it names the cause |
 
@@ -201,6 +201,6 @@ docker builder prune                # free space after builds
 - **24 kHz mono WAV** in, 24 kHz mono WAV out, generated frame by frame at 12.5 fps.
 
 More documentation: [`README_ALL.md`](./README_ALL.md) for the library and the CLI,
-[`manuel.md`](./manuel.md) (French) for every option and the full API reference,
+[`manual.md`](./manual.md) for every option and the full API reference,
 [`AGENTS.md`](./AGENTS.md) for the code layout.
 `--with` adds Gradio without touching `uv.lock` (Gradio is intentionally not a declared dependency).

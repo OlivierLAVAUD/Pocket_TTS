@@ -97,7 +97,7 @@ A single-file entry point at the repository root that serves the same model as a
   `uv run --with gradio --with soundfile python pocket_tts.py`. It is excluded from `ty` for that
   reason (see `[tool.ty.src]` in `pyproject.toml`).
 - `Dockerfile.app` builds it; `docker compose up pocket-tts-app` serves it on port 7860.
-- `manuel.md` is the French manual (options, API reference, Docker, troubleshooting).
+- `manual.md` is the reference manual for the app (options, API reference, Docker).
 
 The file is named `pocket_tts.py` next to the `pocket_tts/` package: this is safe because a
 directory with `__init__.py` always wins over a module of the same name, so `import pocket_tts`

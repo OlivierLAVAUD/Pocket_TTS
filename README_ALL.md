@@ -12,7 +12,7 @@ Supports Python 3.10, 3.11, 3.12, 3.13 and 3.14. Requires PyTorch 2.5+. Does not
 [⚙️ Tech report](https://kyutai.org/blog/2026-01-13-pocket-tts) |
 [📄 Paper](https://arxiv.org/abs/2509.06926) | 
 [📚 Documentation](https://olivierlavaud.github.io/Pocket_TTS/) |
-[🧑‍🍳 Manuel (FR)](./manuel.md)
+[📘 Manual](./manual.md)
 
 > [!NOTE]
 > **This repository is a fork of [kyutai-labs/pocket-tts](https://github.com/kyutai-labs/pocket-tts)** (MIT),
@@ -20,7 +20,7 @@ Supports Python 3.10, 3.11, 3.12, 3.13 and 3.14. Requires PyTorch 2.5+. Does not
 > the voices and the documentation of the original project are unchanged and remain hosted
 > by Kyutai. Fork changes: a ready-to-use Gradio playground and JSON API
 > ([`pocket_tts.py`](#the-gradio-playground-pocket_ttspy)) with its own Docker image, plus the
-> [French manual](./manuel.md).
+> [manual](./manual.md).
 >
 > The training code is available in [`training/`](./training/README.md).
 
