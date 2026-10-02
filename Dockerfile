@@ -4,6 +4,7 @@ WORKDIR /app
 COPY ./pyproject.toml .
 COPY ./uv.lock .
 COPY ./README.md .
+COPY ./README_ALL.md .
 COPY ./.python-version .
 COPY ./pocket_tts ./pocket_tts
 

@@ -3,7 +3,7 @@ name = "pocket-tts"
 requires-python = ">= 3.10,<3.15"
 description = "Kyutai's pocket-sized text-to-speech!"
 version = "3.3.0"
-readme = "README.md"
+readme = "README_ALL.md"
 license = "MIT"
 authors = [{ name = "Olivier LAVAUD", email = "olivier.lavaud@gmail.com" }]
 dependencies = [

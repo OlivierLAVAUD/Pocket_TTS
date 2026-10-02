@@ -23,7 +23,7 @@ ENV UV_LINK_MODE=copy \
 # --no-dev skips the training and evaluation tools, and --frozen keeps the
 # committed lock as-is. Gradio is not a declared dependency, so it is installed
 # on top of the synced environment.
-COPY ./pyproject.toml ./uv.lock ./README.md ./.python-version ./
+COPY ./pyproject.toml ./uv.lock ./README.md ./README_ALL.md ./.python-version ./
 RUN uv sync --no-dev --frozen --no-install-project
 
 COPY ./pocket_tts ./pocket_tts
