@@ -496,7 +496,7 @@ class TTSModel(nn.Module):
                 return int(offset.view(-1)[0].item())
         raise ValueError(
             "Could not find offset in model state, please open an issue "
-            "at https://github.com/kyutai-labs/pocket-tts/issues"
+            "at https://github.com/OlivierLAVAUD/Pocket_TTS/issues"
         )
 
     @torch.no_grad

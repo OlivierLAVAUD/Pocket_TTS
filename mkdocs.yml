@@ -1,6 +1,7 @@
 site_name: Pocket TTS
-repo_url: https://github.com/kyutai-labs/pocket-tts
-repo_name: kyutai-labs/pocket-tts
+site_url: https://olivierlavaud.github.io/Pocket_TTS/
+repo_url: https://github.com/OlivierLAVAUD/Pocket_TTS
+repo_name: OlivierLAVAUD/Pocket_TTS
 extra:
   generator: false
 

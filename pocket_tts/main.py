@@ -54,9 +54,9 @@ web_app = FastAPI(
 web_app.add_middleware(
     CORSMiddleware,
     allow_origins=[
+        # Local front-ends; add your own deployment domains here.
         "http://localhost:3000",
-        "https://pod1-10007.internal.kyutai.org",
-        "https://kyutai.org",
+        "http://localhost:7860",
     ],
     allow_credentials=True,
     allow_methods=["*"],

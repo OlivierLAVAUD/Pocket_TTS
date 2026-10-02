@@ -9,6 +9,24 @@ services:
     command: ["serve", "--host", "0.0.0.0"]
     restart: unless-stopped
 
+  # Gradio playground + JSON API (pocket_tts.py).
+  pocket-tts-app:
+    build:
+      context: .
+      dockerfile: Dockerfile.app
+    ports:
+      - "7860:7860"
+    volumes:
+      - pocket_tts_cache:/root/.cache/pocket_tts
+      - hf_cache:/root/.cache/huggingface
+      # Reference recordings, colon separated in POCKET_TTS_VOICE below.
+      # - ./voices:/voices:ro
+    environment:
+      - POCKET_TTS_LANGUAGE=${POCKET_TTS_LANGUAGE:-english}
+      # - POCKET_TTS_VOICE=/voices/recording.wav
+      # - HF_TOKEN=${HF_TOKEN}  # needed for the voice-cloning weights
+    restart: unless-stopped
+
 volumes:
   pocket_tts_cache:
   hf_cache:

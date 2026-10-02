@@ -2,7 +2,7 @@
 
 If you have a GPU and some speech data, you can train your own Pocket TTS! We try to make the training scripts work out of the box, meaning you don't need to know the ins-and-outs of the model to get a TTS. For best results, you might need to dig a bit deeper and tweak some hyperparameters. The training code follows the [CALM paper](https://arxiv.org/abs/2509.06926), so start there to get an understanding of how the model works.
 
-We're happy to feature community-trained models in the [list of community-trained models](../README.md#models-trained-by-the-community) (giving credit to the author) if they are novel, e.g. cover languages or voices that our official Pocket TTS models cannot do, or are better in other ways. [Open an issue](https://github.com/kyutai-labs/pocket-tts/issues/new) or PR to get started.
+We're happy to feature community-trained models in the [list of community-trained models](../README.md#models-trained-by-the-community) (giving credit to the author) if they are novel, e.g. cover languages or voices that our official Pocket TTS models cannot do, or are better in other ways. [Open an issue](https://github.com/OlivierLAVAUD/Pocket_TTS/issues/new) or PR to get started.
 
 ## Quickstart
 
@@ -335,7 +335,7 @@ Corpus size and model depth (16L/24L/32L) do not move it either. EMA decay
 To distribute your trained model, the easiest way is to upload it to [Hugging Face](https://huggingface.co/). You need to upload the following files:
 - the model weights (mimi + flow_lm model) as a `.safetensors` file
 - the tokenizer file as a `.model` file.
-- A `.yaml` file that has the same structure as the official Pocket TTS config files, but with the paths to your model weights and tokenizer. See [this example file](https://raw.githubusercontent.com/kyutai-labs/pocket-tts/refs/heads/main/pocket_tts/config/english_2026-04.yaml) for reference.
+- A `.yaml` file that has the same structure as the official Pocket TTS config files, but with the paths to your model weights and tokenizer. See [this example file](https://raw.githubusercontent.com/OlivierLAVAUD/Pocket_TTS/refs/heads/main/pocket_tts/config/english_2026-04.yaml) for reference.
 
 Once those have been uploaded, try using your model with the official Pocket TTS wheel:
 

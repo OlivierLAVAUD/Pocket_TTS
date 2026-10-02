@@ -7,17 +7,22 @@ Forget about the hassle of using GPUs and web APIs serving TTS models. With Kyut
 
 Supports Python 3.10, 3.11, 3.12, 3.13 and 3.14. Requires PyTorch 2.5+. Does not require the gpu version of PyTorch.
 
-[🔊 Demo](https://kyutai.org/pocket-tts) | 
-[🐱‍💻GitHub Repository](https://github.com/kyutai-labs/pocket-tts) | 
+[🐱‍💻GitHub Repository](https://github.com/OlivierLAVAUD/Pocket_TTS) | 
 [🤗 Hugging Face Model Card](https://huggingface.co/kyutai/pocket-tts) | 
 [⚙️ Tech report](https://kyutai.org/blog/2026-01-13-pocket-tts) |
 [📄 Paper](https://arxiv.org/abs/2509.06926) | 
-[📚 Documentation](https://kyutai-labs.github.io/pocket-tts/)
+[📚 Documentation](https://olivierlavaud.github.io/Pocket_TTS/) |
+[🧑‍🍳 Manuel (FR)](./manuel.md)
 
 > [!NOTE]
-> **New (August 2026):** We've released the training code! Check out [`training/`](https://github.com/kyutai-labs/pocket-tts/blob/main/training/README.md) to start training your own models.
-> Open a PR to add your model to the [Models trained by the community](#models-trained-by-the-community) section.
-
+> **This repository is a fork of [kyutai-labs/pocket-tts](https://github.com/kyutai-labs/pocket-tts)** (MIT),
+> maintained by [oLV - Olivier LAVAUD](mailto:olivier.lavaud@gmail.com). The model weights,
+> the voices and the documentation of the original project are unchanged and remain hosted
+> by Kyutai. Fork changes: a ready-to-use Gradio playground and JSON API
+> ([`pocket_tts.py`](#the-gradio-playground-pocket_ttspy)) with its own Docker image, plus the
+> [French manual](./manuel.md).
+>
+> The training code is available in [`training/`](./training/README.md).
 
 ## Main takeaways
 * Runs on CPU
@@ -31,12 +36,15 @@ Supports Python 3.10, 3.11, 3.12, 3.13 and 3.14. Requires PyTorch 2.5+. Does not
 * Multi-language support: english, french, german, portuguese, italian, spanish, dutch
 * Can handle infinitely long text inputs
 * [Can run on client-side in the browser](#in-browser-implementations)
+* [Gradio web UI and JSON API out of the box](#the-gradio-playground-pocket_ttspy)
 
 Additional languages may be added in the future.
 
-## Trying it from the website, without installing anything
+## Trying it in a browser, without installing anything
 
-Navigate to the [Kyutai website](https://kyutai.org/pocket-tts) to try it out directly in your browser. You can input text, select different voices, and generate speech without any installation.
+Run the playground described in [The Gradio playground](#the-gradio-playground-pocket_ttspy) to
+try it out in your browser: you can input text, select different voices, and generate speech
+without any installation.
 
 ## Trying it with the CLI
 
@@ -91,7 +99,7 @@ The `--voice` argument can also take a plain wav file as input for voice cloning
 You can use your own or check out our [voice repository](https://huggingface.co/kyutai/tts-voices).
 We recommend [cleaning the sample](https://podcast.adobe.com/en/enhance) before using it with Pocket TTS, because the audio quality of the sample is also reproduced.
 
-Feel free to check out the [generate documentation](https://kyutai-labs.github.io/pocket-tts/CLI%20Commands/generate/) for more details and examples.
+Feel free to check out the [generate documentation](https://olivierlavaud.github.io/Pocket_TTS/CLI%20Commands/generate/) for more details and examples.
 For trying multiple voices and prompts quickly, prefer using the `serve` command.
 
 ### The `serve` command
@@ -104,16 +112,60 @@ pocket-tts serve
 ```
 Navigate to `http://localhost:8000` to try the web interface, it's faster than the command line as the model is kept in memory between requests.
 
-You can check out the [serve documentation](https://kyutai-labs.github.io/pocket-tts/CLI%20Commands/serve/) for more details and examples.
+You can check out the [serve documentation](https://olivierlavaud.github.io/Pocket_TTS/CLI%20Commands/serve/) for more details and examples.
+
+### The Gradio playground (`pocket_tts.py`)
+
+The repository root also ships `pocket_tts.py`: the same model, served as a
+[Gradio](https://gradio.app) web UI plus a JSON API, in a single file. It is handy
+for comparing voices side by side, and it stays usable as a Python module.
+
+```bash
+# Run it from a checkout (gradio is an optional dependency, not installed by default)
+uv run --with gradio --with soundfile python pocket_tts.py --language french
+# or, with pocket-tts and gradio already installed in your environment
+python pocket_tts.py --host 0.0.0.0 --port 7860
+```
+
+The UI is served at `http://localhost:7860`, next to these endpoints:
+
+| Endpoint | Description |
+| --- | --- |
+| `GET /api/health` | Model, device, sample rate |
+| `GET /api/voices` | Predefined voices, plus the local ones given with `--voice` |
+| `POST /api/generate` | JSON body (`text`, `voice`, `frames_after_eos`, `max_tokens`, `response_format`), returns a WAV file or base64 JSON |
+| `POST /api/tts` | Multipart form (`text`, `voice`, `voice_wav`), streams the WAV as it is generated, like `serve` |
+
+```bash
+curl -X POST http://localhost:7860/api/generate \
+  -H 'Content-Type: application/json' \
+  -d '{"text": "Hello world.", "voice": "alba"}' -o speech.wav
+```
+
+Run it in Docker with the companion Dockerfile:
+
+```bash
+docker build -f Dockerfile.app -t pocket-tts-app .
+docker run --rm -p 7860:7860 -v hf-cache:/root/.cache/huggingface pocket-tts-app --language french
+# or, together with the `serve` server:
+docker compose up pocket-tts-app
+```
+
+`--voice /voices/recording.wav` (repeatable) exposes your own reference recordings
+in the UI and the API. Voice cloning needs the gated weights: accept the terms on
+[huggingface.co/kyutai/pocket-tts](https://huggingface.co/kyutai/pocket-tts) and pass
+`HF_TOKEN` to the server (or run `hf auth login` locally), otherwise the app answers
+with the catalog of predefined voices only. Requests are serialized: the model is
+shared, and pocket-tts is not thread-safe.
 
 ### The `export-voice` command
 
-Processing an audio file (e.g., a .wav or .mp3) for voice cloning is relatively slow, but loading a safetensors file -- a voice embedding converted from an audio file -- is very fast. You can use the `export-voice` command to do this conversion. See the [export-voice documentation](https://kyutai-labs.github.io/pocket-tts/CLI%20Commands/export_voice/) for more details and examples.
+Processing an audio file (e.g., a .wav or .mp3) for voice cloning is relatively slow, but loading a safetensors file -- a voice embedding converted from an audio file -- is very fast. You can use the `export-voice` command to do this conversion. See the [export-voice documentation](https://olivierlavaud.github.io/Pocket_TTS/CLI%20Commands/export_voice/) for more details and examples.
 
 
 ## Using it as a Python library
 
-You can try out the Python library on Colab [here](https://colab.research.google.com/github/kyutai-labs/pocket-tts/blob/main/docs/pocket-tts-example.ipynb).
+You can try out the Python library on Colab [here](https://colab.research.google.com/github/OlivierLAVAUD/Pocket_TTS/blob/main/docs/pocket-tts-example.ipynb).
 
 Install the package with
 ```bash
@@ -189,7 +241,7 @@ model_state_copy = model.get_state_for_audio_prompt("./some_voice.safetensors")
 audio = model.generate_audio(model_state_copy, "Hello world!")
 ```
 
-You can check out the [Python API documentation](https://kyutai-labs.github.io/pocket-tts/API%20Reference/python-api/) for more details and examples.
+You can check out the [Python API documentation](https://olivierlavaud.github.io/Pocket_TTS/API%20Reference/python-api/) for more details and examples.
 
 ## Running on GPU
 
@@ -237,7 +289,7 @@ A few things to be aware of if you want to use the GPU:
 
 At the moment, we do not support (but would love pull requests adding):
 
-- [Adding silence in the text input to generate pauses.](https://github.com/kyutai-labs/pocket-tts/issues/6)
+- Adding silence in the text input to generate pauses.
 
 We tried running this TTS model on the GPU but did not observe a speedup compared to CPU execution
 on hardware with very strong single-thread CPU performance, notably because we use a batch size of
@@ -248,7 +300,7 @@ on other hardware and caveats if you want to try it yourself.
 
 We accept contributions! Feel free to open issues or pull requests on GitHub.
 
-You can find development instructions in the [CONTRIBUTING.md](https://github.com/kyutai-labs/pocket-tts/tree/main/CONTRIBUTING.md) file. You'll also find there how to have an editable install of the package for local development.
+You can find development instructions in the [CONTRIBUTING.md](./CONTRIBUTING.md) file. You'll also find there how to have an editable install of the package for local development.
 
 ## In-browser implementations
 
@@ -274,7 +326,7 @@ We don't have official support for this yet, but you can try out one of these co
 
 To use a community model, just use the `--config` argument and point it to the url of the model's yaml file. For example:
 ```bash
-uvx pocket-tts generate --config https://raw.githubusercontent.com/kyutai-labs/pocket-tts/refs/heads/main/pocket_tts/config/english_2026-04.yaml
+uvx pocket-tts generate --config https://raw.githubusercontent.com/OlivierLAVAUD/Pocket_TTS/refs/heads/main/pocket_tts/config/english_2026-04.yaml
 ```
 
 It also works with huggingface urls like `hf://kyutai/pocket-tts/config/english_2026-04.yaml` or local paths like `./english_2026-04.yaml`.
@@ -284,7 +336,7 @@ The pre-made voices listed above are embeddings precomputed with our released we
 We recommend inserting the commit hash somehow in the url to avoid breaking changes by the model authors. For example:
 
 ```bash
-uvx pocket-tts generate --config https://raw.githubusercontent.com/kyutai-labs/pocket-tts/891886a61a1ed45fd429a0a63bd96181e6cff637/pocket_tts/config/english_2026-04.yaml
+uvx pocket-tts generate --config https://raw.githubusercontent.com/OlivierLAVAUD/Pocket_TTS/main/pocket_tts/config/english_2026-04.yaml
 ```
 or with `hf://...`
 ```bash
@@ -385,7 +437,7 @@ uvx pocket-tts generate \
 ```
 </details>
 
-Want your model here? Head to the [training Readme](https://github.com/kyutai-labs/pocket-tts/blob/main/training/README.md) to get started!
+Want your model here? Head to the [training Readme](./training/README.md) to get started!
 
 ## Projects using Pocket TTS
 

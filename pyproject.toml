@@ -4,6 +4,8 @@ requires-python = ">= 3.10,<3.15"
 description = "Kyutai's pocket-sized text-to-speech!"
 version = "3.3.0"
 readme = "README.md"
+license = "MIT"
+authors = [{ name = "Olivier LAVAUD", email = "olivier.lavaud@gmail.com" }]
 dependencies = [
     "numpy>=2",
     # I tried 2.4.0 but the generated audio is wrong, so 2.5+ is needed.
@@ -79,6 +81,11 @@ packages = ["pocket_tts"]
 [project.scripts]
 pocket-tts = "pocket_tts.main:cli_app"
 
+[project.urls]
+Repository = "https://github.com/OlivierLAVAUD/Pocket_TTS"
+Issues = "https://github.com/OlivierLAVAUD/Pocket_TTS/issues"
+Documentation = "https://olivierlavaud.github.io/Pocket_TTS/"
+
 [tool.uv]
 exclude-newer = "7 days"
 # System python distribution can have header files missing, so we use only the python
@@ -89,8 +96,10 @@ python-preference = "only-managed"
 ban-relative-imports = "all"
 
 [tool.ty.src]
-# The example notebook imports IPython, which is not a dependency.
-exclude = ["docs/"]
+# The example notebook imports IPython, and the Gradio playground at the
+# repository root imports gradio: both are optional dependencies that the
+# lint/type environment does not install. Ruff still checks pocket_tts.py.
+exclude = ["docs/", "pocket_tts.py"]
 
 [tool.ty.rules]
 missing-type-argument = "error"

@@ -82,10 +82,34 @@ This is a pure Python package with Rust extensions in `training/rust_exts/audio_
 **Configuration (`config/`):**
 - `b6369a24.yaml`: Model configuration (transformer dims, layers, vocab size, etc.)
 
+### Gradio App and JSON API (`pocket_tts.py`)
+
+A single-file entry point at the repository root that serves the same model as a
+[Gradio](https://gradio.app) web UI (mounted at `/`) and a JSON API (`/api/health`,
+`/api/voices`, `/api/generate`, `/api/tts`) from one process.
+- The model is loaded once and shared; **every generation is serialized by a lock**, since
+  pocket-tts is batch-1 and not thread-safe.
+- Voice states are cached (LRU, 8 entries); uploaded reference files are cached but never added
+  to the voice list, because the API deletes the temporary file after the response.
+- Options come from the CLI or the `POCKET_TTS_*` environment variables (`--no-ui` serves the
+  API alone, `--share` launches a public Gradio link).
+- Gradio is an **optional dependency**, not in `uv.lock`: run it with
+  `uv run --with gradio --with soundfile python pocket_tts.py`. It is excluded from `ty` for that
+  reason (see `[tool.ty.src]` in `pyproject.toml`).
+- `Dockerfile.app` builds it; `docker compose up pocket-tts-app` serves it on port 7860.
+- `manuel.md` is the French manual (options, API reference, Docker, troubleshooting).
+
+The file is named `pocket_tts.py` next to the `pocket_tts/` package: this is safe because a
+directory with `__init__.py` always wins over a module of the same name, so `import pocket_tts`
+still resolves to the package.
+
 ### Testing (`tests/`)
 - `test_python_api.py`: Tests for public Python API
 - `test_cli_generate.py`: Tests for CLI generate command
 - `test_documentation_examples.py`: Ensures docs examples work
+- `test_app.py`: Tests for the Gradio app / JSON API. Skipped when Gradio is not installed
+  (`pytest.importorskip`), so it does not run in CI; locally run
+  `uv run --with gradio --with soundfile pytest tests/test_app.py`.
 
 ## Development Workflow
 
